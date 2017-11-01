@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use DB;
-
 class HomeController extends Controller
 {
     /**
@@ -13,10 +11,10 @@ class HomeController extends Controller
      *
      * @return void
      */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    // }
 
     /**
      * Show the application dashboard.
@@ -25,10 +23,42 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        return view('welcome');
     }
-    public function films(){
-        $films=DB::select('select * from film order by title');
-        return view('page.films',compact('films'));
+
+
+    public function films()
+    {
+        //SQL
+        $films=\DB::select('select * from film order by title');
+        return view('pages.films', compact('films'));
     }
+
+    public function filmByID($id)
+    {
+        //Query Builder
+        //$film=\DB::table("film")->where('film_id','=',$id)->first();
+        $film=\App\Film::find($id);
+        return view('pages.filminfo', compact('film'));
+    }
+
+    public function categories()
+    {
+        $categories=\App\Category::all();
+        return view('pages.categories', compact('categories'));
+    }
+
+    public function filmsByCategory($id)
+    {
+        $films=\App\Category::where('category_id', $id)->first()->films()
+               ->orderBy('title', 'asc')->get();
+        return view('pages.films', compact('films'));
+    }
+
+    public function actors()
+    {
+        $actors=\App\Actor::all();
+        return view('pages.actors', compact('actors'));
+    }
+
 }
